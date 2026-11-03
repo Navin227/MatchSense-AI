@@ -463,6 +463,16 @@ class NarrativeApiTests(unittest.TestCase):
                 ["ollama", "cerebras", "groq"],
             )
 
+    def test_narrative_omits_ollama_when_disabled_for_production(self):
+        with (
+            patch("app.services.match_chat_service.settings.llm_provider", "cerebras"),
+            patch("app.services.match_chat_service.settings.ollama_enabled", False),
+            patch("app.services.match_chat_service.settings.cerebras_api_key", "cerebras-test"),
+            patch("app.services.match_chat_service.settings.gemini_api_key", ""),
+            patch("app.services.match_chat_service.settings.groq_api_key", ""),
+        ):
+            self.assertEqual(_narrative_providers_to_try(), ["cerebras"])
+
     def test_flat_provider_response_is_normalized_to_narrative_sections(self):
         response = {
             title: f"Evidence-based {title.lower()}."

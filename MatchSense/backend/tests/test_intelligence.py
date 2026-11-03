@@ -508,6 +508,18 @@ class MatchIntelligenceServiceTests(unittest.TestCase):
         ):
             self.assertEqual(_providers_to_try(), ["ollama", "cerebras"])
 
+    def test_cloud_provider_does_not_fall_back_to_ollama_when_disabled(self):
+        from app.services.match_chat_service import _providers_to_try
+
+        with (
+            patch("app.services.match_chat_service.settings.llm_provider", "cerebras"),
+            patch("app.services.match_chat_service.settings.ollama_enabled", False),
+            patch("app.services.match_chat_service.settings.cerebras_api_key", "cerebras-test"),
+            patch("app.services.match_chat_service.settings.gemini_api_key", ""),
+            patch("app.services.match_chat_service.settings.groq_api_key", ""),
+        ):
+            self.assertEqual(_providers_to_try(), ["cerebras"])
+
     def test_chat_falls_back_once_and_caches_validated_llm_response(self):
         from app.services import match_chat_service
 

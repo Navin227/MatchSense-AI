@@ -5,11 +5,13 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
+    frontend_origin: str = "https://matchsense-ai-1.onrender.com"
     sportmonks_api_token: str = ""
     sportmonks_base_url: str = "https://cricket.sportmonks.com/api/v2.0"
     poll_interval_seconds: int = Field(default=30, ge=5, le=3600)
     replay_base_interval_seconds: float = Field(default=1.0, gt=0, le=60)
     llm_provider: Literal["ollama", "cerebras", "gemini", "groq"] = "ollama"
+    ollama_enabled: bool = True
     ollama_base_url: str = "http://localhost:11434"
     ollama_model: str = "qwen2.5:3b"
     cerebras_api_key: str = ""

@@ -9,6 +9,7 @@ import {
   type Team,
 } from './MatchAnalysisSections'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
+import { apiUrl, apiWebSocketUrl } from './api'
 import {
   playerAnalysisPath,
   playerRouteId,
@@ -91,8 +92,6 @@ type ReplayLibraryMatch = {
   data_quality_issues: string[]
 }
 type Section = 'overview' | 'scorecard' | 'intelligence'
-const API_BASE = import.meta.env.VITE_API_BASE_URL ?? '/api'
-
 function show(value: number | string | null | undefined) {
   return value === null || value === undefined || value === '' ? '—' : value
 }
@@ -108,10 +107,7 @@ function initials(team: Team | null) {
 }
 
 function socketAddress(sessionId: string) {
-  const url = new URL(API_BASE, window.location.origin)
-  url.protocol = url.protocol === 'https:' ? 'wss:' : 'ws:'
-  url.pathname = `${url.pathname.replace(/\/$/, '')}/replay/${encodeURIComponent(sessionId)}/ws`
-  return url.toString()
+  return apiWebSocketUrl(`/replay/${encodeURIComponent(sessionId)}/ws`)
 }
 
 export default function ReplayMode({ onBack }: { onBack: () => void }) {
@@ -147,7 +143,7 @@ export default function ReplayMode({ onBack }: { onBack: () => void }) {
     setReplay(null)
     setSection('overview')
     try {
-      const response = await fetch(`${API_BASE}/replay`, {
+      const response = await fetch(apiUrl('/replay'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ fixture_id: id }),
@@ -223,7 +219,7 @@ export default function ReplayMode({ onBack }: { onBack: () => void }) {
     let active = true
     const loadLibrary = async () => {
       try {
-        const response = await fetch(`${API_BASE}/replay/library`)
+        const response = await fetch(apiUrl('/replay/library'))
         if (!response.ok) {
           const body = await response.json().catch(() => null) as { detail?: string } | null
           throw new Error(body?.detail ?? `Unable to load replay competitions (${response.status}).`)
@@ -258,7 +254,7 @@ export default function ReplayMode({ onBack }: { onBack: () => void }) {
       setMatchesError(null)
       try {
         const query = new URLSearchParams({ league_id: selectedLeague, season_id: selectedSeason })
-        const response = await fetch(`${API_BASE}/replay/library/matches?${query}`)
+        const response = await fetch(apiUrl(`/replay/library/matches?${query}`))
         if (!response.ok) {
           const body = await response.json().catch(() => null) as { detail?: string } | null
           throw new Error(body?.detail ?? `Unable to load completed matches (${response.status}).`)

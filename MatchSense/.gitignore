@@ -1,7 +1,8 @@
 .env
+.env.*
+!.env.example
 .venv/
 __pycache__/
 node_modules/
 dist/
 *.pyc
-

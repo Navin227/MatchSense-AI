@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Navigate, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom'
+import { apiUrl } from './api'
 import {
   Activity,
   AlertCircle,
@@ -254,7 +255,6 @@ type InningsScorecard = {
   powerplay: { label: string; overs: string | null; boundary_legal_balls?: number | null; runs: number; wickets: number; legal_balls: number; run_rate: number | null; complete: boolean } | null
 }
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL ?? '/api'
 const EMPTY_SCORE: Score = { runs: null, wickets: null, overs: null, run_rate: null }
 
 class ApiRequestError extends Error {
@@ -271,7 +271,7 @@ class ApiRequestError extends Error {
 }
 
 async function requestJson<T>(path: string, options?: RequestInit): Promise<T> {
-  const response = await fetch(`${API_BASE}${path}`, options)
+  const response = await fetch(apiUrl(path), options)
   if (!response.ok) {
     const body = await response.json().catch(() => null) as {
       detail?: string

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Activity, ArrowLeft, LoaderCircle } from 'lucide-react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
+import { apiUrl } from './api'
 import {
   buildScorecardsFromDeliveries,
   PlayerAnalysisDetail,
@@ -44,8 +45,6 @@ type LoadedAnalysis = {
   props: AnalysisProps
   player: PlayerSelection
 }
-
-const API_BASE = import.meta.env.VITE_API_BASE_URL ?? '/api'
 
 function isNavigationState(value: unknown): value is PlayerAnalysisNavigationState {
   if (!value || typeof value !== 'object') return false
@@ -104,7 +103,7 @@ function findPlayer(
 }
 
 async function fetchMatchAnalysis(fixtureId: string): Promise<AnalysisProps> {
-  const response = await fetch(`${API_BASE}/matches/${encodeURIComponent(fixtureId)}`)
+  const response = await fetch(apiUrl(`/matches/${encodeURIComponent(fixtureId)}`))
   if (!response.ok) {
     const body = await response.json().catch(() => null) as { detail?: string } | null
     throw new Error(body?.detail ?? `Unable to load fixture ${fixtureId} (${response.status}).`)
@@ -124,7 +123,7 @@ async function fetchMatchAnalysis(fixtureId: string): Promise<AnalysisProps> {
 }
 
 async function fetchReplayAnalysis(sessionId: string, checkpoint: number): Promise<AnalysisProps> {
-  const response = await fetch(`${API_BASE}/replay/${encodeURIComponent(sessionId)}`)
+  const response = await fetch(apiUrl(`/replay/${encodeURIComponent(sessionId)}`))
   if (!response.ok) {
     const body = await response.json().catch(() => null) as { detail?: string } | null
     throw new Error(body?.detail ?? 'The replay session is no longer available. Return to the replay library and reload it.')

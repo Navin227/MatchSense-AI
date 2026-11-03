@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { apiUrl } from './api'
 
 export type Team = { id: number | string | null; name: string; short_name: string | null; image_path?: string | null }
 type Extras = { wides: number | null; no_balls: number | null; byes: number | null; leg_byes: number | null; penalty?: number | null }
@@ -118,8 +119,6 @@ type NarrativeResponse = {
   is_finished: boolean
 }
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL ?? '/api'
-
 function narrativeCheckpoint(props: AnalysisProps, innings: string) {
   if (props.isFinished) {
     const lastDelivery = props.deliveries.reduce(
@@ -196,7 +195,7 @@ function NarrativePanel({
     setLoading(true)
     setError(null)
     const timer = window.setTimeout(() => {
-      void fetch(`${API_BASE}/narrative`, {
+      void fetch(apiUrl('/narrative'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         signal: controller.signal,

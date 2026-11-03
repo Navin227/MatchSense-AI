@@ -940,7 +940,7 @@ def _llm_context(context: dict[str, Any]) -> dict[str, Any]:
 
 
 def _provider_config(provider: str) -> dict[str, Any] | None:
-    if provider == "ollama":
+    if provider == "ollama" and settings.ollama_enabled:
         return {
             "url": f"{settings.ollama_base_url.rstrip('/')}/api/chat",
             "model": settings.ollama_model,
