@@ -4,4 +4,4 @@ __pycache__/
 node_modules/
 dist/
 *.pyc
-/backend/app/services/narrative_service.py
+
